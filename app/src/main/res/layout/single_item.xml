@@ -6,11 +6,15 @@
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
     app:cardCornerRadius="10dp"
-    app:cardElevation="8dp">
+    app:cardElevation="8dp"
+
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="175dp"
-        android:layout_height="270dp">
+        android:layout_width="155dp"
+        android:layout_height="260dp"
+
+        >
 
         <ImageView
             android:id="@+id/item_image_view"
@@ -93,7 +97,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.947"
             app:layout_constraintStart_toStartOf="parent"
-
 
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.986"

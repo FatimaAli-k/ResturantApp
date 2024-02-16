@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.restaurantapp.controller.MyDBHandler;
-import com.example.restaurantapp.controller.MyRecyclerViewAdapter;
 import com.example.restaurantapp.controller.PopUpClass;
 import com.example.restaurantapp.model.Cart;
 import com.example.restaurantapp.model.Item;
@@ -32,13 +30,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.security.AccessController.getContext;
-
 public class CartActivity extends AppCompatActivity {
 
     MyDBHandler dbHandler;
-    List<Item> items;
-    List<Cart> cart;
+    List<Item> itemList;
+    List<Cart> cartList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +44,8 @@ public class CartActivity extends AppCompatActivity {
         FloatingActionButton deleteFab;
 
 
-        items=new ArrayList<Item>();
-        cart=new ArrayList<Cart>();
+        itemList =new ArrayList<Item>();
+        cartList =new ArrayList<Cart>();
 
         Cursor cursor = dbHandler.loadCartHandler();
         if(cursor.getCount()==0){
@@ -59,7 +55,7 @@ public class CartActivity extends AppCompatActivity {
             while (cursor.moveToNext()){
 //
                 Cart cart1= new Cart(cursor.getInt(0),cursor.getInt(1));
-                cart.add(cart1);
+                cartList.add(cart1);
 
 
                 Cursor cursor2 = dbHandler.loadCartItemsHandler(cursor.getInt(1));
@@ -71,7 +67,7 @@ public class CartActivity extends AppCompatActivity {
 //
 
                         Item oneItem= new Item(cursor2.getInt(0),cursor2.getString(1),Integer.parseInt(cursor2.getString(2)),cursor2.getBlob(3));
-                        items.add(oneItem);
+                        itemList.add(oneItem);
 //           Log.e("cursur", "onCreate: " +oneItem.getId());
 
 
@@ -90,7 +86,7 @@ public class CartActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.cart_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recyclerView.setAdapter(new RecyclerViewAdapter(items,cart));
+        recyclerView.setAdapter(new RecyclerViewAdapter(itemList, cartList));
 
         deleteFab=findViewById(R.id.delete_cart_fab);
         deleteFab.setOnClickListener(new View.OnClickListener() {
@@ -208,6 +204,7 @@ public class CartActivity extends AppCompatActivity {
 
 
 
+
             updatePriceTotal();
             recyclerViewHolder.minusBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -217,10 +214,20 @@ public class CartActivity extends AppCompatActivity {
                    boolean s= dbHandler.deleteFromCartHandler((Integer.parseInt(recyclerViewHolder.cartIdTxv.getText().toString())));
 
 
-                    Log.e("TAG"+i+" id "+recyclerViewHolder.cartIdTxv.getText().toString(), "onClick: "+s );
+//                    Log.e("TAG"+i+" id "+recyclerViewHolder.cartIdTxv.getText().toString(),"n:"+recyclerViewHolder.itemNameTxv.getText()+ "onClick: " );
+
+//                    Log.e("TAG"+i+" id "+recyclerViewHolder.cartIdTxv.getText().toString(), "onClick: "+s );
+
+//                    Log.e("TAG"+i+" id "+cartList.get(i).getId(), "onClick: "+recyclerViewHolder.cartIdTxv.getText().toString()+s );
                     //replace later with adapter refresh
-                    finish();
-                    startActivity(getIntent());
+//                    finish();
+//                    startActivity(getIntent());
+
+                    if(s) {
+                        removeAt(i);
+                        updatePriceTotal();
+                    }
+
 //                    int t=0;
 //                    t=dbHandler.findItemCartHandler(Integer.parseInt(recyclerViewHolder.itemIdTxv.getText().toString()));
 //                    Log.e("TAG"+i, "onClick: "+t );
@@ -235,6 +242,14 @@ public class CartActivity extends AppCompatActivity {
         }
 
 
+        private void removeAt(int position) {
+            mCart.remove(position);
+            mItems.remove(position);
+            notifyItemRemoved(position);
+            notifyDataSetChanged();
+            notifyItemRangeChanged(position, mCart.size());
+            notifyItemRangeChanged(position, mItems.size());
+        }
 
     }
     // convert from byte array to bitmap
@@ -289,5 +304,6 @@ public class CartActivity extends AppCompatActivity {
             }
         }
     };
+
 
 }

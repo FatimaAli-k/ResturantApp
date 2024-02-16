@@ -9,9 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.animation.Animator;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +28,8 @@ import com.example.restaurantapp.controller.CircleAnimationUtil;
 import com.example.restaurantapp.controller.MyDBHandler;
 import com.example.restaurantapp.controller.PopUpClass;
 import com.example.restaurantapp.model.Item;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+
         ImageButton newItem,cart,deleteAll;
         TextView numItemsTxv;
         deleteAll=findViewById(R.id.delete_everything_imageButton);
@@ -52,7 +52,19 @@ public class MainActivity extends AppCompatActivity {
         cart=findViewById(R.id.cart_btn);
         numItemsTxv=findViewById(R.id.cart_items_num_textView);
         dbHandler= new MyDBHandler(this,null);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
 
+
+        if( !pref.getBoolean("dataIsSet",false)){
+
+
+            insetPlaceHolderData();
+
+            editor.putBoolean("dataIsSet", true);
+            editor.apply();
+        }
+       
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         RecyclerView recyclerView = findViewById(R.id.items_recycler_view);
         int gridSpanCount = getResources().getInteger(R.integer.grid_span_count);
         recyclerView.setLayoutManager(new GridLayoutManager(this, gridSpanCount));
@@ -110,6 +123,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void insetPlaceHolderData() {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.bundocucu);
+        byte[] imgae=getBytesFromBitmap(bitmap);
+        dbHandler.addItemHandler("crepe with nuts and Bundoqoque", 10000,imgae );
+
+         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.cake);
+         imgae=getBytesFromBitmap(bitmap);
+        dbHandler.addItemHandler("cake", 15000,imgae );
+
+        bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.juice);
+        imgae=getBytesFromBitmap(bitmap);
+        dbHandler.addItemHandler("strawberry juice ", 5000,imgae );
+
+        bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.friedegg);
+        imgae=getBytesFromBitmap(bitmap);
+        dbHandler.addItemHandler("egg ", 1000,imgae );
+
+        Log.e("mainAct", "insetPlaceHolderData: " );
+
+
+    }
+    public static byte[] getBytesFromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        return stream.toByteArray();
+    }
 
 
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
