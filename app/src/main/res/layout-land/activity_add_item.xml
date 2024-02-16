@@ -31,7 +31,7 @@
             android:layout_height="54dp"
             android:ems="10"
             android:hint="item name"
-
+            android:maxLength="50"
             android:inputType="textPersonName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

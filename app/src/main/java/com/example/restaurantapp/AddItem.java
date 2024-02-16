@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -136,7 +137,28 @@ public class AddItem extends AppCompatActivity {
 
     }
 
+    public static Bitmap decodeUri(Context c, Uri uri, final int requiredSize)
+            throws FileNotFoundException {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o);
 
+        int width_tmp = o.outWidth
+                , height_tmp = o.outHeight;
+        int scale = 1;
+
+        while(true) {
+            if(width_tmp / 2 < requiredSize || height_tmp / 2 < requiredSize)
+                break;
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(c.getContentResolver().openInputStream(uri), null, o2);
+    }
     private void requestPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(AddItem.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             Toast.makeText(getApplicationContext(), "Write External Storage permission allows us to save files. Please allow this permission in App Settings.", Toast.LENGTH_LONG).show();
@@ -226,22 +248,34 @@ public class AddItem extends AppCompatActivity {
 //                e.printStackTrace();
 //
 //            }
+
             Uri selectedImage = data.getData();
+
+
             Bitmap bitmap= null;
+//            try {
+//                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+//                Picasso.get().load(selectedImage).into(imageView);
+//               image=getBytesFromBitmap(bitmap);
+//
+//
+//
+//            } catch (FileNotFoundException e) {
+//
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//
+//                e.printStackTrace();
+//            }
+
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                bitmap=decodeUri(this,selectedImage,500);
                 Picasso.get().load(selectedImage).into(imageView);
-               image=getBytesFromBitmap(bitmap);
-
-
-
+                image=getBytesFromBitmap(bitmap);
             } catch (FileNotFoundException e) {
-
-                e.printStackTrace();
-            } catch (IOException e) {
-
                 e.printStackTrace();
             }
+
 
         }
 
