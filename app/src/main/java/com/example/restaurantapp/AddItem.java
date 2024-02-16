@@ -112,7 +112,7 @@ public class AddItem extends AppCompatActivity {
 //                if(checkName && checkPrice){
                 int price;
                 if(!checkPrice)
-                    price=404;
+                    price=250;
                 else
                     price=Integer.parseInt(itemPrice.getText().toString());
 

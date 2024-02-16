@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("dataIsSet", true);
             editor.apply();
         }
-       
+
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         private TextView itemNameTxv,itemPriceTxv, itemIdTxv;
         private ImageView imageView,minusBtn;
-        private Button plusBtn;
+        private Button plusBtn, deleteBtn;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
             itemIdTxv =itemView.findViewById(R.id.item_id_text_view);
             imageView=itemView.findViewById(R.id.item_image_view);
-
+            deleteBtn=itemView.findViewById(R.id.item_db_delete_btn);
             plusBtn=itemView.findViewById(R.id.plus_btn);
             minusBtn=itemView.findViewById(R.id.minus_btn);
 
@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
             return new RecyclerViewHolder(inflater, viewGroup);
         }
+
 
 
         @Override
@@ -247,6 +248,18 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             });
+
+            recyclerViewHolder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    dbHandler.deleteOneItemHandler(item.getId());
+                    removeAt(i);
+                    setCartCount();
+                }
+            });
+
+
 
 
 
@@ -306,6 +319,14 @@ public class MainActivity extends AppCompatActivity {
                 return 0;
         }
 
+        private void removeAt(int position) {
+
+            mItems.remove(position);
+            notifyItemRemoved(position);
+            notifyDataSetChanged();
+            notifyItemRangeChanged(position, mItems.size());
+        }
+
 
 
     }
@@ -338,6 +359,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    //Yes button clicked
+                    dbHandler.deleteCartHandler();
+                    dbHandler.deleteItemsHandler();
+                    finish();
+                    startActivity(getIntent());
+
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    //No button clicked
+                    break;
+            }
+        }
+    };
+
+    DialogInterface.OnClickListener dialogClickListener2 = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             switch (which){

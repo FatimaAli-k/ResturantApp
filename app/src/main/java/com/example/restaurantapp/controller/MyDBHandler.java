@@ -153,6 +153,18 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
         return db.delete(TABLE_CART, COLUMN_CART_ID + "=" +"'"+ ItemId +"'", null) > 0;
     }
+    public boolean deleteOneItemHandler(int ItemId) {
+
+        String query = "Select*FROM " + TABLE_CART + " WHERE " + COLUMN_ITEM_ID + " = '" + String.valueOf(ItemId) + "'";
+        SQLiteDatabase db = this.getWritableDatabase();
+
+         db.delete(TABLE_CART, COLUMN_ITEM_ID + "=" +"'"+ ItemId +"'", null);
+
+        String query2 = "Select*FROM " + TABLE_ITEM + " WHERE " + COLUMN_ID + " = '" + String.valueOf(ItemId) + "'";
+        SQLiteDatabase db2 = this.getWritableDatabase();
+
+        return db2.delete(TABLE_ITEM, COLUMN_ID + "=" +"'"+ ItemId +"'", null) > 0;
+    }
     public boolean deleteCartHandler() {
 
         String query = "Select*FROM " + TABLE_CART ;
